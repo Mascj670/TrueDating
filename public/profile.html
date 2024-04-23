@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+    <h1>Profile Bio</h1>
+    <p id="bioText">Loading biography...</p>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('your-form-id'); // Replace with your actual form ID
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData(form);
+                fetch('/print', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('output').innerText = data.message; // Displaying the message
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+        </script>
+
+    <div id="output"></div>
+
+    <a href="/">Go back</a>
+</body>
+</html>
