@@ -3,34 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile Page</title>
+    <title>Dating Profile</title>
     <link rel="stylesheet" href="profile.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Profile Bio</h1>
-    <p id="bioText">Loading biography...</p>
+    <header>
+        <h1 id="name">...</h1>
+    </header>
+    <main>
+        <div id="profile" class="profile-content"></div>
+        <div id="details" class="profile-details">
+            <section id="breachInfo" class="breach-info"></section>
+            <section id="pasteInfo" class="paste-info"></section>
+        </div>
+    </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('your-form-id'); // Replace with your actual form ID
-            form.addEventListener('submit', function(event) {
-                event.preventDefault();
-                const formData = new FormData(form);
-                fetch('/print', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('output').innerText = data.message; // Displaying the message
-                })
-                .catch(error => console.error('Error:', error));
-            });
+            fetch('data.json')
+            .then(response => response.json())
+            .then(data => {
+                // Assuming 'firstName' is a key in your data.json
+                document.getElementById('name').textContent = `${data.firstName}'s Dating Profile Bio`;
+                
+                document.getElementById('profile').innerHTML = data.profile.content.replace(/\*\*/g, '<b>').replace(/\n\n/g, '<br><br>'); // Markdown to HTML
+                
+                let detailsHTML = '';
+                if(data.breaches && data.breaches.length > 0) {
+                    const breachesText = data.breaches.map(b => b.Name).join(", ");
+                    detailsHTML += `<section><strong>Breaches:</strong> ${breachesText}</section>`;
+                } else {
+                    detailsHTML += "<section>No breaches found.</section>";
+                }
+
+                // Add pastes info if available
+                if(data.pastes && data.pastes.length > 0) {
+                    const pastesText = data.pastes.map(p => `Source: ${p.Source}, Title: ${p.Title}, Date: ${p.Date}, EmailCount: ${p.EmailCount}`).join("<br>");
+                    detailsHTML += `<section><strong>Pastes:</strong><br> ${pastesText}</section>`;
+                } else {
+                    detailsHTML += "<section>No pastes found.</section>";
+                }
+                
+                document.getElementById('details').innerHTML = detailsHTML;
+            })
+            .catch(error => console.error('Error loading profile data:', error));
         });
-        </script>
+    </script>
 
-    <div id="output"></div>
-
-    <a href="/">Go back</a>
+    <footer>
+        <a href="/">Go back</a>
+    </footer>
 </body>
 </html>
